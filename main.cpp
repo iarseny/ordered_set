@@ -192,6 +192,12 @@ void solve() {
 
                 for (auto j : elems) {
                     add(1, 1, n, j, 0);
+
+                    auto it = all_num.find(j);
+
+                    if (it != all_num.end()) {
+                        all_num.erase(it);
+                    }
                 }
 
                 for (auto j : elems) {
