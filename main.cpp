@@ -183,7 +183,7 @@ void solve() {
                 }
 
                 reverse(elems.begin(), elems.end());
-                vector<int> srt_elems;
+                vector<ll> srt_elems = elems;
                 sort(srt_elems.begin(), srt_elems.end());
 
                 ll inv = find_inv(elems);
