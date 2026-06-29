@@ -164,6 +164,12 @@ void solve() {
         if (prs[i - 1].first == 'p') {
             add(1, 1, n, prs[i - 1].second, 0);
             ans[i] = prs[i - 1].second;
+            auto it = all_num.find(prs[i - 1].second);
+
+            if (it != all_num.end()) {
+                all_num.erase(it);
+            }
+
         } else {
             if (i == 1 || prs[i - 2].first == 'p') {
                 ll d = prs[i - 1].second - diff[i];
@@ -177,6 +183,8 @@ void solve() {
                 }
 
                 reverse(elems.begin(), elems.end());
+                vector<int> srt_elems;
+                sort(srt_elems.begin(), srt_elems.end());
 
                 ll inv = find_inv(elems);
 
@@ -190,16 +198,67 @@ void solve() {
                     d -= get(1, 1, n, j, n);
                 }
 
-                for (auto j : elems) {
-                    add(1, 1, n, j, 1);
+                d -= (int)elems.size();
+
+                auto get_less = [&](int x) {
+                    auto it = lower_bound(srt_elems.begin(), srt_elems.end(), x);
+
+                    if (it == srt_elems.begin()) {
+                        return 0;
+                    }
+
+                    it--;
+
+                    return (int)(it - srt_elems.begin()) + 1;
+                };
+
+
+                int sz = (int)all_num.size();
+
+                int l = 0;
+                int r = sz - 1;
+
+                ll found = -1;
+
+                while (l <= r) {
+                    int mid = (l + r) / 2;
+
+                    ll val = (*all_num.find_by_order(mid));
+
+                    ll know = 0;
+
+                    if (val < n) {
+                        know += get(1, 1, n, val + 1, n);
+                    }
+
+                    know -= 2ll * get_less(val);
+
+                    if (know == d) {
+                        found = mid;
+                        break;
+                    }
+
+                    if (d < know) {
+                        l = mid + 1;
+                    } else {
+                        r = mid - 1;
+                    }
                 }
 
-                d++;
-                // d += (ll)elems.size();
-                //
-                // ll q = spusk(1, 1, n, d);
-                // ans[i] = q;
-                // add(1, 1, n, q, 0);
+                if (found == -1) {
+                    cout << "Falied" << endl;
+                }
+
+                ll val = (*all_num.find_by_order(found));
+
+                ans[i] = val;
+                add(1, 1, n, val, 0);
+
+                auto it = all_num.find(val);
+
+                if (it != all_num.end()) {
+                    all_num.erase(it);
+                }
 
             } else {
                 ll d = prs[i - 1].second - diff[i];
@@ -209,6 +268,11 @@ void solve() {
 
                 ans[i] = q;
                 add(1, 1, n, q, 0);
+                auto it = all_num.find(q);
+
+                if (it != all_num.end()) {
+                    all_num.erase(it);
+                }
             }
         }
     }
