@@ -130,7 +130,7 @@ void solve() {
         ff[i] = 0;
     }
 
-    vector<pair<char, int>> prs;
+    vector<pair<char, ll>> prs;
 
     for (int i = 1; i <= n; i++) {
         char c;
@@ -171,114 +171,98 @@ void solve() {
             }
 
         } else {
-            if (i == 1 || prs[i - 2].first == 'p') {
-                ll d = prs[i - 1].second - diff[i];
+            ll d = prs[i - 1].second - diff[i];
 
-                vector<ll> elems;
+            vector<ll> elems;
 
-                for (int j = i - 1; j >= 1; j--) {
-                    if (prs[j - 1].first == 's') break;
+            for (int j = i - 1; j >= 1; j--) {
+                if (prs[j - 1].first == 's') break;
 
-                    elems.push_back(prs[j - 1].second);
-                }
+                elems.push_back(prs[j - 1].second);
+            }
 
-                reverse(elems.begin(), elems.end());
-                vector<ll> srt_elems = elems;
-                sort(srt_elems.begin(), srt_elems.end());
+            reverse(elems.begin(), elems.end());
+            vector<ll> srt_elems = elems;
+            sort(srt_elems.begin(), srt_elems.end());
 
-                ll inv = find_inv(elems);
+            ll inv = find_inv(elems);
 
-                d -= inv;
+            d -= inv;
 
-                for (auto j : elems) {
-                    add(1, 1, n, j, 0);
+            for (auto j : elems) {
+                add(1, 1, n, j, 0);
 
-                    auto it = all_num.find(j);
-
-                    if (it != all_num.end()) {
-                        all_num.erase(it);
-                    }
-                }
-
-                for (auto j : elems) {
-                    d -= get(1, 1, n, j, n);
-                }
-
-                d -= (int)elems.size();
-
-                auto get_less = [&](int x) {
-                    auto it = lower_bound(srt_elems.begin(), srt_elems.end(), x);
-
-                    if (it == srt_elems.begin()) {
-                        return 0;
-                    }
-
-                    it--;
-
-                    return (int)(it - srt_elems.begin()) + 1;
-                };
-
-
-                int sz = (int)all_num.size();
-
-                int l = 0;
-                int r = sz - 1;
-
-                ll found = -1;
-
-                while (l <= r) {
-                    int mid = (l + r) / 2;
-
-                    ll val = (*all_num.find_by_order(mid));
-
-                    ll know = 0;
-
-                    if (val < n) {
-                        know += get(1, 1, n, val + 1, n);
-                    }
-
-                    know -= 2ll * get_less(val);
-
-                    if (know == d) {
-                        found = mid;
-                        break;
-                    }
-
-                    if (d < know) {
-                        l = mid + 1;
-                    } else {
-                        r = mid - 1;
-                    }
-                }
-
-                if (found == -1) {
-                    cout << "Falied" << endl;
-                }
-
-                ll val = (*all_num.find_by_order(found));
-
-                ans[i] = val;
-                add(1, 1, n, val, 0);
-
-                auto it = all_num.find(val);
+                auto it = all_num.find(j);
 
                 if (it != all_num.end()) {
                     all_num.erase(it);
                 }
+            }
 
-            } else {
-                ll d = prs[i - 1].second - diff[i];
-                d++;
+            for (auto j : elems) {
+                d -= get(1, 1, n, j, n);
+            }
 
-                ll q = spusk(1, 1, n, d);
+            d -= (int)elems.size();
 
-                ans[i] = q;
-                add(1, 1, n, q, 0);
-                auto it = all_num.find(q);
-
-                if (it != all_num.end()) {
-                    all_num.erase(it);
+            auto get_less = [&](int x) {
+                if (srt_elems.empty()) {
+                    return 0;
                 }
+
+                auto it = lower_bound(srt_elems.begin(), srt_elems.end(), x);
+
+                if (it == srt_elems.begin()) {
+                    return 0;
+                }
+
+                it--;
+
+                return (int)(it - srt_elems.begin()) + 1;
+            };
+
+
+            int sz = (int)all_num.size();
+
+            int l = 0;
+            int r = sz - 1;
+
+            ll found = 0;
+
+            while (l <= r) {
+                int mid = (l + r) / 2;
+
+                ll val = (*all_num.find_by_order(mid));
+
+                ll know = 0;
+
+                if (val < n) {
+                    know += get(1, 1, n, val + 1, n);
+                }
+
+                know -= 2ll * get_less(val);
+
+                if (know == d) {
+                    found = mid;
+                    break;
+                }
+
+                if (d < know) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+
+            ll val = (*all_num.find_by_order(found));
+
+            ans[i] = val;
+            add(1, 1, n, val, 0);
+
+            auto it = all_num.find(val);
+
+            if (it != all_num.end()) {
+                all_num.erase(it);
             }
         }
     }
